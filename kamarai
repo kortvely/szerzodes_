@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tervezési Szerződés Generátor — MEK 01/2025</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&family=DM+Sans:wght@400;500;600&display=swap');
+:root{--ink:#1c1c1c;--ink2:#444;--ink3:#888;--line:#e5e2db;--paper:#faf9f6;--paper2:#f2f0ea;--green:#2a4a2a;--green2:#3d6b3d;--green3:#f0f5f0;--gold:#9a6f09;--warn:#b83232;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);}
+header{background:var(--green);color:white;padding:20px 32px;display:flex;align-items:center;gap:14px;border-bottom:3px solid var(--gold);}
+.htxt h1{font-family:'Crimson Pro',serif;font-size:20px;font-weight:600;}
+.htxt p{font-size:10px;opacity:.55;margin-top:2px;text-transform:uppercase;letter-spacing:.1em;}
+.tabs{background:white;border-bottom:1px solid var(--line);display:flex;overflow-x:auto;padding:0 24px;}
+.tab{padding:11px 13px;font-size:10px;font-weight:600;color:var(--ink3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.06em;transition:all .15s;}
+.tab:hover{color:var(--green);}
+.tab.active{color:var(--green);border-bottom-color:var(--green);}
+.tab.done{color:var(--green2);}
+.sn{width:16px;height:16px;border-radius:50%;background:var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;}
+.tab.active .sn{background:var(--green);color:white;}
+.tab.done .sn{background:var(--green2);color:white;}
+main{max-width:820px;margin:0 auto;padding:28px 28px 80px;}
+.panel{display:none;}.panel.active{display:block;}
+.pt{font-family:'Crimson Pro',serif;font-size:23px;font-weight:600;margin-bottom:3px;}
+.pd{font-size:12px;color:var(--ink3);margin-bottom:20px;line-height:1.6;}
+.card{background:white;border:1px solid var(--line);border-radius:10px;padding:20px 24px;margin-bottom:12px;}
+.ct{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:14px;padding-bottom:7px;border-bottom:1px solid var(--line);}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:11px 16px;}
+.fg1{display:grid;grid-template-columns:1fr;gap:11px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px 16px;}
+.fw{grid-column:1/-1;}
+.f{display:flex;flex-direction:column;gap:3px;}
+label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink2);}
+.r{color:var(--warn);margin-left:2px;}
+.h{font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink3);margin-left:2px;}
+input,textarea{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:7px 10px;width:100%;outline:none;transition:border-color .15s,background .15s;}
+input:focus,textarea:focus{border-color:var(--green2);background:white;}
+input::placeholder,textarea::placeholder{color:var(--ink3);}
+textarea{resize:vertical;min-height:64px;}
+.ckg{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;}
+.cki{display:flex;align-items:flex-start;gap:7px;padding:6px 8px;border:1px solid var(--line);border-radius:7px;cursor:pointer;transition:all .15s;}
+.cki:hover{border-color:var(--green2);background:var(--green3);}
+.cki input[type=checkbox]{width:13px;height:13px;min-width:13px;margin-top:3px;accent-color:var(--green);cursor:pointer;}
+.cki .cl{font-size:11.5px;line-height:1.4;}
+.vm{font-size:10px;color:var(--warn);margin-top:2px;display:none;}
+.f.inv input,.f.inv textarea{border-color:var(--warn);}
+.f.inv .vm{display:block;}
+.brow{display:flex;align-items:center;gap:9px;margin-top:22px;}
+.btn{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.04em;padding:8px 18px;border-radius:8px;border:none;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;text-transform:uppercase;}
+.bp{background:var(--green);color:white;}
+.bp:hover{background:#1c3a1c;}
+.bs{background:transparent;color:var(--ink2);border:1px solid var(--line);}
+.bs:hover{background:var(--paper2);}
+.bg{background:var(--gold);color:white;font-size:13px;padding:10px 22px;}
+.bg:hover{background:#7a5607;}
+#co{background:white;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.ctb{background:var(--paper2);border-bottom:1px solid var(--line);padding:8px 16px;display:flex;align-items:center;justify-content:space-between;}
+.ctb span{font-size:9px;color:var(--ink3);font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+#ct{font-family:'Crimson Pro',serif;font-size:13px;line-height:1.85;color:var(--ink);padding:40px 48px;white-space:pre-wrap;max-height:600px;overflow-y:auto;}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--green);color:white;padding:9px 15px;border-radius:8px;font-size:11px;font-weight:600;opacity:0;transform:translateY(8px);transition:all .25s;z-index:999;pointer-events:none;}
+#toast.show{opacity:1;transform:translateY(0);}
+@media(max-width:580px){main{padding:14px;}.fg,.fg3,.ckg{grid-template-columns:1fr;}#ct{padding:20px 16px;font-size:12px;}}
+</style>
+</head>
+<body>
+<header>
+  <div style="font-size:28px">⚖️</div>
+  <div class="htxt"><h1>Tervezési Szerződés Generátor</h1><p>MEK 01/2025 — Teljes tervezői szolgáltatásra</p></div>
+</header>
+<div class="tabs">
+  <div class="tab active" onclick="go(0)"><span class="sn">1</span>Megrendelő</div>
+  <div class="tab" onclick="go(1)"><span class="sn">2</span>Tervező</div>
+  <div class="tab" onclick="go(2)"><span class="sn">3</span>Projekt</div>
+  <div class="tab" onclick="go(3)"><span class="sn">4</span>Szolgáltatások</div>
+  <div class="tab" onclick="go(4)"><span class="sn">5</span>Határidők</div>
+  <div class="tab" onclick="go(5)"><span class="sn">6</span>Díjazás</div>
+  <div class="tab" onclick="go(6)"><span class="sn">7</span>Kapcsolattartó</div>
+  <div class="tab" onclick="go(7)"><span class="sn">8</span>Szerződés</div>
+</div>
+<main>
+
+<div class="panel active" id="p0">
+<p class="pt">Megrendelő adatai</p><p class="pd">A szerződést megrendelő fél azonosítási adatai.</p>
+<div class="card"><div class="ct">Megrendelő</div>
+<div class="fg">
+<div class="f fw" id="f-mn"><label>Megrendelő neve<span class="r">*</span></label><input id="mn" placeholder="Pl. Kovács Építész Kft." oninput="sv()"><span class="vm">Kötelező mező.</span></div>
+<div class="f fw" id="f-mc"><label>Székhely / lakhely<span class="r">*</span></label><input id="mc" placeholder="1234 Budapest, Példa utca 5." oninput="sv()"><span class="vm">Kötelező mező.</span></div>
+<div class="f" id="f-mcj"><label>Cégjegyzékszám</label><input id="mcj" placeholder="01-09-123456" oninput="sv()"></div>
+<div class="f" id="f-ma"><label>Adószám<span class="r">*</span></label><input id="ma" placeholder="12345678-1-41" oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f fw" id="f-mk"><label>Képviseletében eljár<span class="r">*</span></label><input id="mk" placeholder="Pl. Kovács János, ügyvezető" oninput="sv()"><span class="vm">Kötelező.</span></div>
+</div></div>
+<div class="brow"><button class="btn bp" onclick="ns(0,['mn','mc','ma','mk'])">Következő →</button></div>
+</div>
+
+<div class="panel" id="p1">
+<p class="pt">Tervező adatai</p><p class="pd">A tervezői szolgáltatást nyújtó fél adatai.</p>
+<div class="card"><div class="ct">Tervező</div>
+<div class="fg">
+<div class="f fw" id="f-tn"><label>Tervező neve<span class="r">*</span></label><input id="tn" placeholder="Architektúra Stúdió Kft." oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f fw" id="f-tc"><label>Székhely / lakhely<span class="r">*</span></label><input id="tc" placeholder="5678 Budapest, Tervező utca 12." oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f" id="f-tcj"><label>Cégjegyzékszám</label><input id="tcj" placeholder="01-09-654321" oninput="sv()"></div>
+<div class="f" id="f-ta"><label>Adószám<span class="r">*</span></label><input id="ta" placeholder="87654321-2-42" oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f"><label>Kamarai cég nyilvántartási szám</label><input id="tkc" placeholder="MÉK-123456" oninput="sv()"></div>
+<div class="f"><label>Kamarai névjegyzék szám</label><input id="tkn" placeholder="MÉ-789" oninput="sv()"></div>
+<div class="f fw" id="f-tk"><label>Képviseletében eljár<span class="r">*</span></label><input id="tk" placeholder="Kiss Mária, vezető tervező" oninput="sv()"><span class="vm">Kötelező.</span></div>
+</div></div>
+<div class="brow"><button class="btn bs" onclick="go(0)">← Vissza</button><button class="btn bp" onclick="ns(1,['tn','tc','ta','tk'])">Következő →</button></div>
+</div>
+
+<div class="panel" id="p2">
+<p class="pt">Projekt adatai</p><p class="pd">Szerződés tárgya, helyszín, ingatlan azonosítói.</p>
+<div class="card"><div class="ct">Szerződés tárgya</div>
+<div class="fg1">
+<div class="f" id="f-st"><label>Szerződés tárgya<span class="r">*</span></label><input id="st" placeholder="Pl. Lakóépület tervezése — engedélyezési + kiviteli terv" oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f" id="f-sh"><label>Helyszín<span class="r">*</span></label><input id="sh" placeholder="1234 Budapest, Minta utca 10." oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f"><label>Leírás<span class="h">(opcionális)</span></label><textarea id="sl" placeholder="Pl. Kétszintes ikerház, 800 m² telek, 320 m² szintterület" oninput="sv()"></textarea></div>
+</div></div>
+<div class="card"><div class="ct">Ingatlan azonosítói — 1.1. pont</div>
+<div class="fg">
+<div class="f" id="f-it"><label>Település<span class="r">*</span></label><input id="it" placeholder="Budapest" oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f" id="f-iu"><label>Utca, házszám<span class="r">*</span></label><input id="iu" placeholder="Minta utca 10." oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f" id="f-ih"><label>Helyrajzi szám (HRSZ)<span class="r">*</span></label><input id="ih" placeholder="12345/6" oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f" id="f-im"><label>Ingatlan megnevezése<span class="r">*</span></label><input id="im" placeholder="kivett lakóház, udvar és kert" oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f fw" id="f-ie"><label>Építmény megnevezése<span class="r">*</span></label><input id="ie" placeholder="2 lakásos ikerház" oninput="sv()"><span class="vm">Kötelező.</span></div>
+</div></div>
+<div class="brow"><button class="btn bs" onclick="go(1)">← Vissza</button><button class="btn bp" onclick="ns(2,['st','sh','it','iu','ih','im','ie'])">Következő →</button></div>
+</div>
+
+<div class="panel" id="p3">
+<p class="pt">Tervezői szolgáltatások</p><p class="pd">A nem jelölt pontok törlésre kerülnek a szerződésből (2.2. pont).</p>
+<div class="card"><div class="ct">Alapszolgáltatások — 2.2. pont</div>
+<div class="ckg">
+<label class="cki"><input type="checkbox" id="sa" onchange="sv()"><span class="cl">a) Tervezési program</span></label>
+<label class="cki"><input type="checkbox" id="sb" onchange="sv()"><span class="cl">b) Megvalósíthatósági tanulmány</span></label>
+<label class="cki"><input type="checkbox" id="sc" checked onchange="sv()"><span class="cl">c) Tanulmányterv / Vázlatterv / Koncepcióterv</span></label>
+<label class="cki"><input type="checkbox" id="sd" onchange="sv()"><span class="cl">d) Jóváhagyási terv (nem engedélyköteles)</span></label>
+<label class="cki"><input type="checkbox" id="se" checked onchange="sv()"><span class="cl">e) Építési engedélyezési / egyszerű bejelentési terv</span></label>
+<label class="cki"><input type="checkbox" id="sf" checked onchange="sv()"><span class="cl">f) Kivitelezési terv</span></label>
+<label class="cki"><input type="checkbox" id="sg" onchange="sv()"><span class="cl">g) Megvalósulási terv</span></label>
+<label class="cki"><input type="checkbox" id="sh2" onchange="sv()"><span class="cl">h) Kezelési / karbantartási terv</span></label>
+<label class="cki"><input type="checkbox" id="si" onchange="sv()"><span class="cl">i) Jóváhagyási terv (állami beruházás)</span></label>
+<label class="cki"><input type="checkbox" id="sj" checked onchange="sv()"><span class="cl">j) Tervezői művezetés</span></label>
+</div></div>
+<div class="card"><div class="ct">Opcionálisan kitölthető pontok</div>
+<div class="fg1">
+<div class="f"><label>2.4. Megvalósíthatósági tanulmány tartalma</label><textarea id="mt" placeholder="Nem releváns / tartalmi leírás" rows="2" oninput="sv()"></textarea></div>
+<div class="f"><label>2.5. Tanulmányterv formai és tartalmi követelmények</label><textarea id="tt" placeholder="Pl. 1:100 méretarány, 2 nyomtatott + 1 digitális példány" rows="2" oninput="sv()"></textarea></div>
+<div class="f"><label>2.10. Kezelési és karbantartási terv tartalma</label><textarea id="kt" placeholder="Pl. nem szükséges / részletes leírás" rows="2" oninput="sv()"></textarea></div>
+<div class="f"><label>2.12. Nem alapszolgáltatás — egyéb sor</label><input id="nem12" placeholder="Pl. Belsőépítészeti terv" oninput="sv()"></div>
+<div class="f"><label>3.2. Különszolgáltatások felsorolása</label><textarea id="ks" placeholder="– Meglévő épület felmérése&#10;– Épületenergetikai tanúsítvány" rows="3" oninput="sv()"></textarea></div>
+</div></div>
+<div class="brow"><button class="btn bs" onclick="go(2)">← Vissza</button><button class="btn bp" onclick="ns(3,[])">Következő →</button></div>
+</div>
+
+<div class="panel" id="p4">
+<p class="pt">Teljesítési határidők</p><p class="pd">4. és 5. pont — adatszolgáltatás és tervszállítás határideje.</p>
+<div class="card"><div class="ct">Megrendelői adatszolgáltatás — 4. pont</div>
+<div class="fg3">
+<div class="f"><label>Geodéziai felmérés<span class="h">(nap)</span></label><input type="number" id="hg" placeholder="15" min="1" oninput="sv()"></div>
+<div class="f"><label>Geotechnikai vizsgálat<span class="h">(nap)</span></label><input type="number" id="hgt" placeholder="30" min="1" oninput="sv()"></div>
+<div class="f"><label>4.5. sor megnevezése</label><input id="h45n" placeholder="Pl. Felmérési rajz" oninput="sv()"></div>
+<div class="f"><label>4.5. határidő<span class="h">(nap)</span></label><input type="number" id="h45" placeholder="20" min="1" oninput="sv()"></div>
+</div></div>
+<div class="card"><div class="ct">Tervszállítási részteljesítések — 5.1. pont</div>
+<div class="fg1">
+<div class="f"><label>Részteljesítési határidők<span class="r">*</span></label><textarea id="rt" placeholder="1. Koncepcióterv: 30. nap&#10;2. Engedélyezési terv: 90. nap&#10;3. Kivitelezési terv: 150. nap" rows="4" oninput="sv()"></textarea></div>
+<div class="f"><label>Kifogások javítási határideje — 5.3. pont<span class="h">(munkanap)</span></label><input type="number" id="kh" placeholder="5" min="1" oninput="sv()"></div>
+<div class="f"><label>Megrendelő állásfoglalási határideje — 8.1. pont<span class="h">(naptári nap)</span></label><input type="number" id="ah" placeholder="5" min="1" oninput="sv()"></div>
+</div></div>
+<div class="brow"><button class="btn bs" onclick="go(3)">← Vissza</button><button class="btn bp" onclick="ns(4,[])">Következő →</button></div>
+</div>
+
+<div class="panel" id="p5">
+<p class="pt">Tervezési díj és fizetési feltételek</p><p class="pd">6. pont — díj, fizetési ütemezés, bankszámla; 2.11.2. — művezetési óradíj; 9.5. — kötbér.</p>
+<div class="card"><div class="ct">Tervezési és felhasználási díj — 6.1. pont</div>
+<div class="fg">
+<div class="f" id="f-ds"><label>Tervezési díj — számmal (Ft+ÁFA)<span class="r">*</span></label><input id="ds" placeholder="2 500 000" oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f" id="f-db"><label>Tervezési díj — betűvel<span class="r">*</span></label><input id="db" placeholder="kétmillió-ötszázezer" oninput="sv()"><span class="vm">Kötelező.</span></div>
+<div class="f"><label>Felhasználási díj aránya<span class="h">(%)</span></label><input type="number" id="fd" placeholder="20" min="0" max="100" oninput="sv()"></div>
+<div class="f"><label>Fizetési ütemezés — 6.2. pont</label><textarea id="fu" placeholder="30% szerződéskötéskor, 50% engedélyezési terv átadásakor, 20% kiviteli terv átadásakor" rows="3" oninput="sv()"></textarea></div>
+<div class="f fw" id="f-bs2"><label>Tervező bankszámlaszáma — 6.3. pont<span class="r">*</span></label><input id="bs2" placeholder="12345678-12345678-12345678" oninput="sv()"><span class="vm">Kötelező.</span></div>
+</div></div>
+<div class="card"><div class="ct">Művezetési óradíj — 2.11.2. pont</div>
+<div class="fg">
+<div class="f"><label>Óradíj — számmal (Ft+ÁFA)</label><input id="os" placeholder="25 000" oninput="sv()"></div>
+<div class="f"><label>Óradíj — betűvel</label><input id="ob" placeholder="huszonötezer" oninput="sv()"></div>
+</div></div>
+<div class="card"><div class="ct">Késedelmi kötbér — 9.5. pont</div>
+<div class="fg">
+<div class="f"><label>Kötbér mértéke<span class="h">(%/nap)</span></label><input type="number" id="ko" placeholder="0.5" step="0.1" min="0" max="5" oninput="sv()"></div>
+</div></div>
+<div class="brow"><button class="btn bs" onclick="go(4)">← Vissza</button><button class="btn bp" onclick="ns(5,['ds','db','bs2'])">Következő →</button></div>
+</div>
+
+<div class="panel" id="p6">
+<p class="pt">Kapcsolattartók — 11. pont</p><p class="pd">Képviselők neve, beosztása, levelezési elérhetőségek.</p>
+<div class="card"><div class="ct">Megrendelő részéről</div>
+<div class="fg">
+<div class="f fw"><label>Kapcsolattartó neve, beosztása</label><input id="mkn" placeholder="Kovács János, ügyvezető" oninput="sv()"></div>
+<div class="f fw"><label>Levelezési cím</label><input id="mkl" placeholder="1234 Budapest, Minta utca 5." oninput="sv()"></div>
+<div class="f"><label>E-mail cím</label><input type="email" id="mke" placeholder="kovacs@pelda.hu" oninput="sv()"></div>
+<div class="f"><label>Telefon</label><input type="tel" id="mkt" placeholder="+36 30 123 4567" oninput="sv()"></div>
+</div></div>
+<div class="card"><div class="ct">Tervező részéről</div>
+<div class="fg">
+<div class="f fw"><label>Kapcsolattartó neve, beosztása</label><input id="tkn2" placeholder="Kiss Mária, vezető tervező" oninput="sv()"></div>
+<div class="f fw"><label>Levelezési cím</label><input id="tkl" placeholder="5678 Budapest, Tervező utca 12." oninput="sv()"></div>
+<div class="f"><label>E-mail cím</label><input type="email" id="tke" placeholder="kiss@studio.hu" oninput="sv()"></div>
+<div class="f"><label>Telefon</label><input type="tel" id="tkt" placeholder="+36 1 234 5678" oninput="sv()"></div>
+</div></div>
+<div class="card"><div class="ct">Mellékletek</div>
+<div class="fg1"><div class="f"><label>2. sz. melléklet megnevezése</label><input id="mel2" placeholder="Pl. Díjfizetési ütemterv" oninput="sv()"></div></div>
+</div>
+<div class="brow"><button class="btn bs" onclick="go(5)">← Vissza</button><button class="btn bp" onclick="gen()">Szerződés generálása →</button></div>
+</div>
+
+<div class="panel" id="p7">
+<p class="pt">Kész szerződés</p><p class="pd">A teljes kitöltött szerződés szövege. Másolja ki vagy töltse le .txt fájlként.</p>
+<div id="co">
+<div class="ctb"><span>MEK 01/2025 — Kitöltött változat</span><button class="btn bp" onclick="cp()" style="font-size:10px;padding:5px 12px;">📋 Másolás</button></div>
+<div id="ct">A szerződés itt jelenik meg...</div>
+</div>
+<div class="brow">
+<button class="btn bs" onclick="go(6)">← Vissza / Szerkesztés</button>
+<button class="btn bg" onclick="dl()">⬇ Letöltés .txt</button>
+</div>
+</div>
+
+</main>
+<div id="toast"></div>
+<script>
+const IDS=['mn','mc','mcj','ma','mk','tn','tc','tcj','ta','tkc','tkn','tk','st','sh','sl','it','iu','ih','im','ie','sa','sb','sc','sd','se','sf','sg','sh2','si','sj','mt','tt','kt','nem12','ks','hg','hgt','h45n','h45','rt','kh','ah','ds','db','fd','fu','bs2','os','ob','ko','mkn','mkl','mke','mkt','tkn2','tkl','tke','tkt','mel2'];
+function sv(){const d={};IDS.forEach(id=>{const e=document.getElementById(id);if(!e)return;d[id]=e.type==='checkbox'?e.checked:e.value;});try{localStorage.setItem('mek25',JSON.stringify(d));}catch(x){}}
+function ld(){try{const d=JSON.parse(localStorage.getItem('mek25')||'{}');IDS.forEach(id=>{const e=document.getElementById(id);if(!e||d[id]===undefined)return;e.type==='checkbox'?e.checked=d[id]:e.value=d[id];});}catch(x){}}
+function g(id){const e=document.getElementById(id);if(!e)return'';return e.type==='checkbox'?e.checked:(e.value||'').trim();}
+function v(id,fb){return g(id)||(fb!==undefined?fb:'[KITÖLTENDŐ]');}
+function go(n){document.querySelectorAll('.panel').forEach((p,i)=>p.classList.toggle('active',i===n));document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',i===n);t.classList.toggle('done',i<n);});window.scrollTo(0,0);}
+function ns(from,req){let ok=true;req.forEach(id=>{const e=document.getElementById(id);const w=document.getElementById('f-'+id);if(!e||!w)return;const empty=!e.value.trim();w.classList.toggle('inv',empty);if(empty)ok=false;});if(!ok){toast('Kérjük töltse ki a kötelező mezőket!');return;}go(from+1);}
+function svc(){const m={sa:'a) Tervezési program;',sb:'b) Megvalósíthatósági tanulmány (csak állami beruházások esetében alapszolgáltatás);',sc:'c) Tanulmányterv, Vázlatterv, Koncepcióterv (csak elnevezési különbségek);',sd:'d) Jóváhagyási terv (csak abban az esetben készül, ha nem készül engedélyezési terv);',se:'e) Építési engedélyezési terv, egyszerű bejelentési terv, fennmaradási engedélyterv, bontási engedélyterv',sf:'f) Kivitelezési terv;',sg:'g) Megvalósulási terv;',sh2:'h) Kezelési terv/karbantartási terv;',si:'i) Jóváhagyási terv (kizárólag állami beruházás esetén);',sj:'j) Tervezői művezetés'};return Object.entries(m).filter(([k])=>g(k)).map(([,v])=>v).join('\n');}
+function build(){
+const sl=svc();
+const ks=g('ks')||'- Megrendelői adatszolgáltatás átvállalása\n- Meglévő épület felmérése\n- Hatástanulmányok elkészítése\n- Szakvélemények elkészítése';
+return `TERVEZÉSI SZERZŐDÉS
+(MEK 01/2025 — Teljes tervezői szolgáltatásra)
+
+amely létrejött egyrészről:
+
+MEGRENDELŐ:
+
+Megrendelő neve:
+${v('mn')}
+
+Székhelye (lakhelye):
+${v('mc')}
+
+Cégjegyzékszáma:
+${v('mcj','—')}
+
+Adószáma (adóazonosítója):
+${v('ma')}
+
+Képviseletében eljár:
+${v('mk')}
+
+a továbbiakban: mint „Megrendelő"
+
+másrészről:
+
+TERVEZŐ:
+
+Tervező neve:
+${v('tn')}
+
+Székhelye (lakhelye):
+${v('tc')}
+
+Cégjegyzékszáma:
+${v('tcj','—')}
+
+Adószáma (adóazonosítója):
+${v('ta')}
+
+Kamarai cég nyilvántartási száma:
+${v('tkc','—')}
+
+Kamarai névjegyzék száma:
+${v('tkn','—')}
+
+Képviseletében eljár:
+${v('tk')}
+
+a továbbiakban: mint „Tervező"
+
+között a mai napon, az alábbi feltételek szerint.
+
+SZERZŐDÉS TÁRGYA:
+
+A szerződés tárgya:
+${v('st')}
+
+Helyszíne:
+${v('sh')}
+
+Leírása:
+${v('sl','—')}
+
+A Megrendelő által átadott Tervezési program rögzíti, amely a jelen Szerződés 1. sz. mellékletét képezi.
+
+
+I. RÉSZ
+
+1. Tervezési feladat
+
+1.1. Szerződő felek megállapodnak abban, hogy a Megrendelő megrendeli, a Tervező elvállalja a természetben:
+${v('it')} település ${v('iu')} alatt található, az ingatlan-nyilvántartásban ${v('ih')} hrsz. alatt felvett, ${v('im')} megnevezésű ingatlanra építendő
+${v('ie')}
+építmény beruházásának komplett, előkészítéséhez, engedélyeztetéséhez, építtetői jóváhagyásához, megvalósításához, valamint a megvalósult állapot rögzítéséhez szükséges, jelen szerződés 2.2. pontjában felsorolt, építészeti-műszaki tervdokumentációk elkészítését (tervezői alapszolgáltatások) és 2.3. pontban rögzített tervezői különszolgáltatások elvégzését, a jogszabályban és a MÉK „Tervdokumentációk Tartalmai és formai követelményei - I. Magasépítési építmények" elnevezésű szabályzatában (továbbiakban: Szabályzat) meghatározott tartalom szerint.
+
+1.2. A szerződő felek rögzítik, hogy a Tervező átadja jelen Szerződésben meghatározott felhasználásra az építészeti-műszaki tervdokumentációt a Megrendelőnek, és/vagy a Megrendelő meghatalmazása alapján feltölti az ÉTDR-be az építésügyi hatósági engedélyezési eljárás lefolytatása érdekében.
+
+
+2. Tervezői alapszolgáltatás
+
+2.1. Szerződő felek rögzítik, hogy tervezői alapszolgáltatásnak minősül a jogszabály által előírt, valamint a Szabályzatban részletezett kötelező tartalom. Az alapszolgáltatások épület, épületrész épületegyüttes és a hozzá tartozó építmények (továbbiakban létesítmény) megépítéséhez, átalakításához, bővítéséhez, helyreállításához, felújításához, bontásához szükséges, jogszabályban meghatározott tartalmú építészeti műszaki tervek elkészítését, a kivitelezői vállalkozásba adásban való közreműködést, és az építészeti-műszaki tervek megvalósításának felügyeletét tartalmazzák. Ha a tervezési szerződés másként nem rendelkezik, a tervezési feladat csak az alapszolgáltatásokra terjed ki.
+
+2.2. Szerződő felek megállapodnak abban, hogy a jelen szerződés tárgyi hatálya, az alábbi tervezői szolgáltatásokra terjed ki:
+
+${sl||'[Nincs megjelölt szolgáltatás]'}
+
+2.3. A Megrendelő által átadott előzetes tervezési program alapján Tervező a szakági tervezőkkel együttműködve elemzi a Megrendelő igényeit, feltárja az építmény megvalósításának kielégíthető körülményeit, gazdaságos kialakíthatóságát, a vonatkozó jogszabályok és a tervezési területre vonatkozó hatályos helyi szabályozáshoz való alkalmazkodást, és ha szükséges, Megrendelő egyetértésével pontosítja, majd a 266/2013. (VII.11.) Korm.rendelet 16.§ (2) és (3) bekezdésének megfelelő tartalommal véglegesíti a Tervezési programot.
+
+2.4. Megvalósíthatósági tanulmány munkarész tartalmára vonatkozóan a MÉK „Szabályzat" kizárólag állami beruházásokra tartalmaz rendelkezéseket.
+
+Szerződő felek a megvalósíthatósági tanulmány munkarész tartalmát az alábbiak szerint határozzák meg:
+${v('mt','—')}
+
+2.5. Szerződő felek megállapodnak abban, hogy a tanulmányterv, vázlatterv, vagy koncepcióterv pontos tartalmi és formai követelményei jelen szerződés keretén belül az alábbiak:
+${v('tt','—')}
+
+A tanulmányterv, vázlatterv, vagy koncepcióterv minden esetben a Megrendelő jóváhagyásával kerül teljesítésre, mivel ez a tervfázis képezi a továbbtervezés alapját. Amennyiben a továbbtervezés során megrendelői érdekből koncepció váltás történik, szükséges a tanulmányterv, vázlatterv, vagy koncepcióterv módosítása a Megrendelő ismételt jóváhagyásával.
+
+2.6. Építészeti-műszaki dokumentáció
+
+2.6.1. A Megrendelő által elfogadott, jóváhagyott és aláírt tanulmányterv, vázlatterv, vagy koncepcióterv alapján, a Tervező elkészíti az építésügyi hatósági eljáráshoz szükséges építészeti-műszaki dokumentációt a 281/2024. (IX.30.) Korm.rendelet 1. sz. mellékletében (egyszerű bejelentés esetén: 191/2009. (IX.15.) Korm.rendelet 1. sz. mellékletében), valamint a „Szabályzat" VI. fejezetében rögzített tartalomnak megfelelően. Tervező a dokumentációt egyszeri felhasználásra átadja Megrendelőnek az építésügyi hatósági eljárás lefolytatása érdekében.
+
+2.6.2. Tervező, a jelen Szerződés teljesítése érdekében, a jogszabályban meghatározott esetekben tervtanácsi-, valamint településképi véleményezési eljárásban eljár, az illetékes főépítész jóváhagyását jegyzőkönyvbe rögzítteti, beszerzi a tervtanácsi véleményt, valamint egyeztet az építésügyi hatósággal, szakhatóságokkal, az érdekelt közműszolgáltatókkal, beszerzi a jogszabályokban meghatározott szükséges nyilatkozatokat.
+
+Szerződő felek megállapodnak abban, hogy a Tervező az Örökségvédelmi engedélyezési terv/bejelentés tervdokumentáció tartalmát, a 68/2018. (IV.9.) Korm.rendelet 3. sz. melléklete és a „Szabályzat" VI/13. pontjában foglalt tartalommal készíti el.
+
+2.7. Jóváhagyási terv az állami beruházások esetében akkor készül, ha a szerződés tárgya szerinti építmény tervezett építési tevékenysége nem építési, vagy egyéb engedélyhez kötött. Ebben az esetben a jóváhagyási terv tartalmi követelménye megegyezik az 2.6. pontban megfogalmazottakkal.
+
+2.8. Kivitelezési tervdokumentáció
+
+2.8.1. Tervező a Megrendelő által átadott Tervezési program, Jóváhagyási terv, valamint az építési engedély határozatban foglaltaknak megfelelően, elkészíti a létesítmény – minden szükséges szakági munkarésszel együtt – komplett kivitelezési tervét, a 191/2009. (IX. 15.) Korm. rendelet 1. mellékletben és „Szabályzat" VII. fejezetében által rögzített tartalommal és átadja egyszeri felhasználás (építmény kivitelezése céljából) a Megrendelőnek.
+
+2.8.2. Tervező jelen Szerződés (tervfázis) teljesítése érdekében egyeztet a szakhatóságokkal, az érdekelt közműszolgáltatókkal, beszerzi a jogszabályokban meghatározott szakági munkarészekre a szükséges tervjóváhagyásokat ill. a szükséges nyilatkozatokat.
+
+2.9. Szerződő felek megállapodnak abban, hogy a Tervező elkészíti a 281/2024. (IX.30.) Korm.rendelet 1. számú melléklete és a „Szabályzat" VIII. fejezete szerint a megvalósulási tervdokumentációt.
+
+2.10. Szerződő felek megállapodnak abban, hogy a Tervező elkészíti a „Szabályzat" IX. fejezete szerint a kezelési és karbantartási tervet az alábbi tartalommal:
+${v('kt','—')}
+
+2.11. Tervezői művezetés
+
+2.11.1. Szerződő felek rögzítik, hogy a tervezői művezetői tevékenység a tervezői alapszolgáltatás részeként, a 2023. évi C. törvény 185.§ (2) bekezdése, 186.§ és 187.§ alapján, a jelen szerződés tárgyát képező építészeti-műszaki dokumentáció kivitelezésére terjed ki, ennek során az építészeti-műszaki dokumentációt készítő tervező a kivitelezés helyszínén az általa készített kivitelezési dokumentáció megvalósulását ellenőrzi, elősegíti a kivitelezési dokumentációval kapcsolatban felmerülő tervezési szakkérdések megoldását azzal, hogy a tervezői művezetés az építési műszaki ellenőr megbízását nem helyettesítheti. A tervező, a tervezői művezetési feladatait a 191/2009. (IX.15.) Korm.rendelet 15.§ (1)-(3) bekezdései, 27.§ (1)-(4) bekezdései, illetőleg a Magyar Építész Kamara a „Kamarai tag közreműködése a magasépítési beruházási folyamatban" című szabályzat 3.1. fejezete szerint végzi.
+
+2.11.2. A tervezői művezetés tevékenységet a Tervező művezetési díj ellenében végzi. Az elszámolás ellenértéke az óradíj. Az elszámolás a ténylegesen ráfordított idő alapján történik, melybe az utazás időtartama is beleszámít. A tervezői művezetés díja alkalmanként közigazgatási határon belül négy óránál, megye határon kívül pedig nyolc óránál kevesebb nem lehet.
+
+A tervezői művezetés (alapszolgáltatás és különszolgáltatás) óradíja:
+${v('os')} Ft+Áfa, azaz ${v('ob')} forint+Áfa,
+
+A tervezői művezetés díja havonta utólag — teljesítés igazolás után — fizetendő, a Tervező által a tárgyhónapot követő ötödik napjáig kiállított számla ellenében.
+
+A helyszínen történő megjelenést, a tervezői művezetési tevékenység ellátásának elvégzését Tervező ill. képviselője az építési napló mellékleteként kezelt feljegyzésével, illetve a Megbízónak küldött írásbeli állásfoglalásával, észrevételével, feljegyzésével igazolja.
+
+2.11.3. Tervező nem vállal felelősséget a Dokumentációtól történő eltérő kivitelezésért, vagy a 191/2009. (IX.15.) Korm.rendelet 10.§ (1) és (2) bekezdése szerinti szabálytalan tevékenységért. Amennyiben a Tervező a Dokumentációtól eltérő tevékenységet tapasztal, köteles legkésőbb három munkanapon belül észrevételeit az e-építési naplóban történő bejegyzéssel rögzíteni.
+
+2.11.4. Megrendelő tudomásul veszi, hogy Tervező jogosult a tervezői művezetés ellátását — megfelelő jogosultsággal rendelkező — közreműködő útján végezni. A Tervező közreműködőjének személyéről és elérhetőségeiről köteles Megrendelőt a helyszíni tevékenység megkezdését megelőző 5. munkanapig írásban értesíteni.
+
+2.11.5. A Tervező a jelen szerződés tárgyát képező építészeti-műszaki dokumentáció építőipari kivitelezésének befejezését követően a fővállalkozó kivitelező nyilatkozatának megtétele előtt, az épület, épületrész használatbavételének megkéréséhez az e-építési naplóban nyilatkozatot tesz arról, hogy:
+a) az építészeti-műszaki dokumentációtól eltérés volt-e az épület külső megjelenésében;
+b) ha volt eltérés, akkor az a hozzájáruló nyilatkozatával történt-e;
+c) a hozzájárulása nélkül megvalósított eltérést tudomásul veszi-e;
+d) a megvalósulási dokumentáció az eltéréseket tartalmazza-e;
+e) a használatbavételhez hozzájárul-e, ha nem, annak építészeti indokait rögzítenie kell.
+
+2.12. Nem képezi Tervező alapszolgáltatását (a felsoroltak példák, a nem szükségesek törlendők):
+- Városrendezési és egyéb szabályozási tervek készítése
+- Közlekedési és egyéb hatástanulmányok
+- Tudományos dokumentáció készítése
+- Külső utak tervezése
+- Geotechnikai vizsgálat és jelentés készítése
+- Építési terület geodéziai felmérése${g('nem12')?'\n- '+g('nem12'):''}
+
+
+3. Tervezői különszolgáltatások
+
+3.1. Különszolgáltatások azok a munkarészek, amelyeket a Tervező az alapszolgáltatásokkal összefüggésben, de ezeknek kiterjesztéseképpen végez. Szerződő felek tervezői különszolgáltatásnak tekintik a jelen szerződés 2. pontjában az „Alapszolgáltatások" körében fel nem sorolt, jelen szerződés 3. pontjában rögzített kiegészítő szolgáltatások körét.
+
+3.2. A különszolgáltatások csak akkor válnak a Szerződés részévé, ha ebben a pontban felsorolásra kerülnek:
+
+${ks}
+
+
+4. Megrendelői adatszolgáltatás és annak határidői
+
+4.1. Előzetes tervezési program — Szerződés aláírásával egyidejűleg
+
+4.2. Térképmásolat és tulajdonlap — Szerződés aláírásával egyidejűleg
+
+4.3. Geodéziai felmérés (szükség esetén) — Szerződés aláírásától számított ${v('hg','……')} nap
+
+4.4. Geotechnikai vizsgálat és jelentés — Szerződés aláírásától számított ${v('hgt','……')} nap
+
+4.5. ${v('h45n','……………………')} — Szerződés aláírásától számított ${v('h45','……')} nap
+
+
+II. RÉSZ
+
+5. Építészeti-műszaki tervdokumentáció tervszállítási határideje, módja, teljesítés
+
+5.1. A szerződő felek megállapodnak abban, hogy a Tervező, a jelen Szerződés 1.1. pontjában meghatározott építmény beruházásának komplett előkészítéséhez, engedélyeztetéséhez, építtetői jóváhagyásához, megvalósításához, valamint a megvalósult állapot rögzítéséhez szükséges, jelen szerződés 2.2. pontjában felsorolt, építészeti-műszaki tervdokumentációkat (tervezői alapszolgáltatások) és tervezői különszolgáltatásokat az alábbi részteljesítési határidőkben köteles a Megrendelő részére papír formátumban 4 példányban és elektronikus formátumban (elektronikus adathordozón, vagy felhőben) az ÉTDR felületére való feltöltésre alkalmas PDF/A formátumban 1 példány nem szerkeszthető és 1 példány szerkeszthető formátumban átadni.
+
+Szerződő felek az alábbi részteljesítési határidőket határozzák meg:
+${v('rt')}
+
+5.2. A teljesítés a Megrendelő jogosult képviselőjének történő, írásbeli átadás-átvétel útján történik. A teljesítés helye a Megrendelő székhelye. A teljesítés történhet személyes vagy postai úton történő átadással. Postai úton történő átadás esetén, a teljesítés napja a postára adás kelte.
+
+5.3. A Megrendelő az építészeti-műszaki tervdokumentáció átvételétől számított 8 napon belül jogosult kifogásait a Tervezővel írásban közölni. A szerződő felek megállapodnak abban, hogy a Megrendelő fenti határidőben közölt megalapozott kifogásai alapján, a Tervező az írásban megküldött kifogások kézbesítését követő ${v('kh','……')} munkanapon belül köteles a tervdokumentáció kifogásolt részét kijavítani. A szerződő felek rögzítik, hogy amennyiben a Tervező fenti határidőben a megalapozott megrendelői kifogásokat kijavítja, és a megrendelőnek átadja, úgy nem esik késedelembe a teljesítésével. Megrendelő a 8. nap leteltét követően, amennyiben kifogással nem élt ill. ha a Tervező a megalapozott kifogásokat kijavította, köteles a teljesítés igazolást haladéktalanul kiadni.
+
+5.4. Tervező a tervezési feladatok vonatkozásában akkor teljesít szerződésszerűen, ha az elkészült építészeti-műszaki tervdokumentáció a tervezési programnak, a hatályos jogszabályoknak, a tervezésre vonatkozó előírások (magyar szabványok, szakmai standardok, MÉK „Szabályzat") rendelkezéseinek megfelel.
+
+
+6. Tervezési- és felhasználási díj, fizetés módja, határideje
+
+6.1. A jelen Szerződés 1.1. pontjában meghatározott építészeti-műszaki tervdokumentáció elkészítése (alap és különszolgáltatásokkal együtt) és felhasználási díja
+
+${v('ds')} Ft+Áfa, azaz ${v('db')} forint+Áfa,
+
+melynek ${v('fd','……')} %-a, az építészeti-műszaki tervdokumentáció egyszeri, Szerződés szerinti felhasználási díja.
+
+6.2. A tervezési- és felhasználási díj megfizetése az alábbi ütemezésben esedékes:
+${v('fu')}
+
+6.3. A megrendelő köteles a jelen Szerződés 6.1. pontjában meghatározott tervezési- és felhasználási díjat, az építészeti-műszaki tervdokumentáció szerződésszerű teljesítésétől (teljesítési igazolás kiadásának időpontja, vagy a leszállított terv átadásától számított 9. naptári nap, amennyiben a megrendelő nem nyilatkozik és teljesítési igazolást sem ad) számított 15 naptári napon belül, a Tervező által kiállított számla alapján, átutalás útján a Tervező ${v('bs2')} számú számlájára megfizetni.
+
+6.4. A fizetés teljesítés időpontja az a nap, amikor az átutalt tervezési- és felhasználási díj a Tervező bankszámláján jóváírásra került.
+
+
+III. RÉSZ
+
+7. Tervező felelőssége, kötelezettsége és jogai
+
+7.1. Kötelezettségek Tervező az „Alapszolgáltatása" részét képező építészeti-műszaki tervek elkészítésére, átadására, valamint jelen Szerződésben meghatározott „Különszolgáltatások" elvégzésére köteles. E körben a jóhiszeműség és tisztesség követelményének megfelelően, a megrendelővel kölcsönösen együttműködve köteles eljárni, a jogszabályokat, szabályzatokat, építési előírásokat, szabványokat és MÉK Szabályzatot betartani.
+
+7.2. Utasítások Tervező a megrendelő érdekeinek, továbbá utasításainak megfelelően köteles eljárni, de az élet- és vagyonbiztonságot veszélyeztető, építési jogszabályokba és előírásba ütköző, szakszerűtlen, nem megvalósítható, etikai szabályokkal ellentétes szolgáltatást nem végezhet.
+
+7.3. Titoktartás Tervező a Szerződés alapján és a tervezés folyamán birtokába jutott üzleti adatokat, információkat köteles üzleti titokként bizalmasan kezelni, azokat a szerződéssel össze nem függő célra nem használhatja fel, harmadik személynek nem adhatja át.
+
+7.4. Felelősség Tervező felelős:
+a) az általa készített építészeti-műszaki tervek műszaki tartalmának szakszerűségéért, valós állapotnak megfelelő tartalmáért, a tervezéssel érintett védett építészeti és természeti örökség megóvásáért;
+b) a terv készítésében résztvevő szakági tervezők és szakértők kiválasztásáért;
+c) a szakági tervezők közötti egyeztetések koordinálásáért, terveik összehangolásáért;
+d) a szakmai felelősségbiztosításra vonatkozó kötvénye rendelkezésre állásáról;
+e) hogy az építészeti-műszaki tervdokumentáción sem neki, sem harmadik személynek nincs olyan joga, mely a jelen Szerződés szerinti felhasználást korlátozná.
+
+7.5. Tervmódosítás Tervező a Megrendelő által elfogadott Jóváhagyási tervet követően az építészeti-műszaki tervdokumentáción a Megrendelő hozzájárulása nélkül lényegi módosítást nem végezhet, azt nem egészítheti ki, abból nem hagyhat ki, kivéve, amennyiben ez szakmai kötelessége, vagy műszaki szükségességből adódik.
+
+7.6. Tervellenőrzés Megrendelő tervellenőrt alkalmazhat (állami beruházásnál kötelező). Tervellenőr alkalmazása esetén Tervezőnek a teljes tervezési folyamat során együtt kell működnie a tervellenőrrel.
+
+
+8. Megrendelő kötelezettsége és jogai
+
+8.1. Kötelezettségek Megrendelő jogosult a Tervező által készített tervek jóváhagyására, vagy a Tervezési programnak való meg nem felelés esetén annak jóvá nem hagyására. Megrendelő köteles a Szerződés szerint teljesített tervek átvételére, az alapszolgáltatások és a vállalt különszolgáltatások díjának, valamint a Tervező felmerült és igazolt szerződésszerű költségeinek megfizetésére.
+
+Megrendelő köteles a Tervező kérésére a tervezési folyamatban felmerülő lényeges kérdésekben ${v('ah','……')} naptári napon belül állást foglalni, utasítást adni.
+
+8.2. Tervezési program Megrendelő feladata, hogy céljairól a Tervezőt teljes körűen tájékoztassa, igényeit az előzetes Tervezési programban rögzítse.
+
+8.3. Adatszolgáltatások Megrendelő a 4. pontban rögzített határidőkben köteles a Tervező rendelkezésére bocsátani: az előzetes tervezési programot, a földhivatal által hitelesített ingatlan-nyilvántartási térképmásolatot, geodéziai helyszínrajzot, tartószerkezeti szaktervező által igényelt geotechnikai vizsgálatot és jelentést.
+
+8.4. Hatósági engedélyek A szükséges engedélyek beszerzése a Megrendelő feladata. Tervező — az építésügyi hatósági engedélyezési eljárásban vállalt szerepétől függetlenül — nem felel az engedélyezési eljárás sikertelenségéért, kivéve, ha az az építészeti-műszaki dokumentáció tervhibájára vezethető vissza.
+
+
+IV. RÉSZ
+
+9. A szerződésszegés és a szerződés megszűnése
+
+9.1. Késedelem Ha valamelyik fél a jelen Szerződésben meghatározott bármelyik határidőt elmulasztja, a másik fél — a késedelem jellegétől függően — ha ez érdekében áll, a teljesítésre megfelelő póthatáridőt tűz ki. A póthatáridő eredménytelen eltelte esetén a Ptk. késedelmes teljesítés körében meghatározott jogkövetkezményei alkalmazhatók, jelen Szerződésben megállapított eltérésekkel.
+
+9.2. Szüneteltetés Megrendelő — előzetes értesítés és költségtérítés mellett — a Tervező szolgáltatásait legfeljebb kilencven napra szüneteltetheti. Harminc napot meghaladó szüneteltetés esetén, Tervező követelheti az addig elvégzett szolgáltatásainak díját és azzal felmerült, igazolt költségeit, továbbá azokat is, melyek a szüneteltetéssel összefüggésben keletkeztek.
+
+Ha a szüneteltetés időtartama a kilencven napot meghaladja, Tervező a Szerződést azonnali hatállyal felmondhatja, és kárának megtérítését követelheti.
+
+9.3. Szolgáltatás megtagadása Ha a Megrendelő az esedékes fizetési kötelezettségével késedelembe esik, vagy vagyoni viszonyainak időközben bekövetkezett jelentős megromlása folytán fizetési kötelezettségének teljesítése veszélyeztetve van, megfelelő biztosíték hiányában, a Tervező jogosult további szolgáltatásait megtagadni. Tervező nyolc napos póthatáridőt köteles tűzni a fizetési kötelezettség teljesítésére.
+
+9.4. Késedelmi kamat Megrendelő fizetési kötelezettségének késedelmes teljesítése esetén tervezőt késedelmi kamat illeti, melynek mértéke a mindenkori jegybanki alapkamat kétszerese.
+
+9.5. Késedelmi kötbér Amennyiben a Tervező a tervdokumentáció átadásával késlekedik, Megrendelőt késedelmi kötbér illeti, mely a 5.2. pontban rögzített — késedelembe esett — tervezési munkarész nettó tervezési díjának ${v('ko','……')}%-a naponta, legfeljebb azonban a 6.1. pontban rögzített nettó tervezési díj 20%-a. Tervező hozzájárul, hogy Megrendelő a kölcsönösen elfogadott késedelmi kötbér összegét az aktuális részszámlába beszámítsa.
+
+9.6. Megrendelőnek felróható meghiúsulás jogkövetkezményei:
+Ha a Szerződés Megrendelőnek felróható ok miatt szűnik meg, Tervező jogosult a Szerződés megszűnésének időpontjáig elvégzett szolgáltatásainak, felmerült költségeinek ellenértékére, továbbá meghiúsulási kötbérként a Szerződésben rögzített díj
+a) 20%-ára, ha a Szerződés az előkészítő szakaszban szűnik meg,
+b) 10%-ára, ha a Szerződés az engedélyezési terv készítési szakaszban szűnik meg.
+
+9.7. Tervező egyéb szerződésszegésének jogkövetkezményei:
+a) Hibás teljesítés esetén a Tervező elsődlegesen az építészeti-műszaki tervdokumentáció kijavítására köteles. Ha a Tervező a kijavítást alapos ok nélkül megtagadja, vagy határidőre nem végzi el, a Megrendelő a Szerződéstől díjfizetési kötelezettség nélkül elállhat.
+b) Az építészeti-műszaki dokumentáció Tervezőnek felróható nem teljesítése, vagy alkalmatlan teljesítése esetén, Megrendelőt kizárólag a 6.1. pontban rögzített — késedelembe esett — tervezési munkarész nettó tervezési díja 40%-nak megfelelő összeg, mint átalány-kártérítés illeti meg.
+c) A vállalt különszolgáltatások tervezőnek való felróható nem teljesítése esetén, az adott különszolgáltatás díjának teljesített hányada, de legfeljebb 40%-a, mint átalány-kártérítés jár.
+d) A 30 napot meghaladó késedelmes teljesítést bármelyik fél súlyos szerződésszegésként értékelheti, és a Szerződés hatályát egyoldalú nyilatkozatával megszüntetheti (szankciós elállás vagy felmondás), amikor is a meghiúsulási kötbér szabályai irányadóak.
+
+
+V. RÉSZ
+
+10. Szerzői jogok, jog- és kellékszavatosság
+
+10.1. A szerződő felek rögzítik, hogy a jelen Szerződés alapján a Tervező által elkészített tervdokumentáció a szerzői jogról szóló 1999. évi LXXVI. törvény védelme alatt áll. A jelen Szerződés alapján elkészített terv és ehhez kapcsolódó munkarészek a Tervező tulajdonában maradnak.
+
+10.2. A szerződő felek megállapodnak abban, hogy a Megrendelőt a jelen Szerződés alapján elkészített építészeti-műszaki dokumentáció vonatkozásában egyszeri felhasználási jog illeti meg. A Megrendelő azt csak a jelen Szerződésben rögzített célra jogosult felhasználni. A felhasználás feltétele, hogy a Megrendelő a Tervezőnek a jelen Szerződésben meghatározott tervezési- és felhasználási díjat szerződésszerűen teljesítse.
+
+10.3. A tervdokumentáció (vagy annak részei) ismételt felhasználásához, másnak történő átadásához, illetve átengedéséhez a Tervező külön írásbeli engedélye vagy a szerződő felek írásbeli megállapodása szükséges. Ennek megszegése esetén a Megrendelő kártérítési felelősséggel tartozik a Tervező felé.
+
+10.4. A Tervező jogszavatosságot vállal azért, hogy az általa készített tervdokumentáción harmadik személynek felhasználási vagy egyéb korlátozó joga nem áll fenn. A Tervező szavatosságot vállal azért, hogy az általa elkészített tervdokumentáció a jelen Szerződés aláírásának időpontjában hatályban lévő jogszabályoknak megfelel.
+
+
+VI. RÉSZ
+
+11. Együttműködés
+
+11.1. A szerződő felek a Szerződés teljesítésének érdekében kölcsönösen együttműködve kötelesek eljárni. A szerződő felek a tervezés folyamán kötelesek egymást minden lényeges körülményről tájékoztatni. A szerződő felek megállapodnak abban, hogy jelen Szerződés módosítása kizárólag írásban érvényes.
+
+A szerződő felek a tervezés folyamán végzett egyeztetések során az általuk lényegesnek tartott észrevételekről, kifogásokról, tájékoztatásokról írásbeli emlékeztetőt kötelesek felvenni. Kizárólag ezen írásbeli emlékeztetőben, vagy írásban közölt kifogások, észrevételek, tájékoztatások vehetőek figyelembe egy esetleges jogvita esetén.
+
+11.2. A szerződő felek rögzítik, hogy jelen Szerződést érintő kérdésekben, ill. a tervek véleményezésében, egyeztetésében, állásfoglalásra jogosult képviselő:
+
+Megrendelő részéről:
+név, beosztás: ${v('mkn','……………………')}
+
+Tervező részéről:
+név, beosztás: ${v('tkn2','……………………')}
+
+A Tervező más személyektől észrevételt, kifogást nem fogadhat el.
+
+11.3. A szerződő felek megállapodnak abban, hogy jelen Szerződés teljesítése során az egymásnak küldött írásbeli nyilatkozataikat az alábbi címekre küldhetik meg:
+
+Megrendelő részéről:
+levelezési cím: ${v('mkl','……………………')}
+e-mail: ${v('mke','……………………')}
+telefon: ${v('mkt','……………………')}
+
+Tervező részéről:
+levelezési cím: ${v('tkl','……………………')}
+e-mail: ${v('tke','……………………')}
+telefon: ${v('tkt','……………………')}
+
+11.4. A szerződő felek megállapodnak abban, hogy jelen Szerződésben nem szabályozott kérdésekben a mindenkor hatályos magyar jogszabályok — így különösen, de nem kizárólagosan a Ptk., a 2023. évi C. törvény, az 1999. évi LXXVI. törvény, a 281/2024. (IX.30.) Korm.rendelet, a 191/2019. (IX.15.) Korm.rendelet, a 266/2013. (VII.11.) Korm.rendelet vonatkozó szabályai — az irányadóak.
+
+Ezt követően a szerződő felek törvényes képviselői, a jelen szerződést annak elolvasását és értelmezését követően, mint ügyleti akaratukkal mindenben egyezőt helybenhagyólag aláírták.
+
+Kelt: ___________________________, 20_____. ________________ hó ___. napján.
+
+
+_________________________________          _________________________________
+           Megrendelő                                        Tervező
+     ${v('mn','………………………………')}               ${v('tn','………………………………')}
+   ${v('mk','………………………………')}             ${v('tk','………………………………')}
+
+
+Mellékletek:
+1. sz. melléklet: Tervezési program
+2. sz. melléklet: ${v('mel2','……………………')}`;
+}
+function gen(){go(7);const t=build();document.getElementById('ct').textContent=t;toast('Szerződés legenerálva!');}
+function cp(){navigator.clipboard.writeText(document.getElementById('ct').textContent).then(()=>toast('Szöveg vágólapra másolva!')).catch(()=>toast('Másolás nem sikerült'));}
+function dl(){const t=document.getElementById('ct').textContent;const n=(g('mn')||'szerzodes').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');const b=new Blob([t],{type:'text/plain;charset=utf-8'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='szerzodes_'+n+'_'+new Date().toISOString().slice(0,10)+'.txt';a.click();URL.revokeObjectURL(u);toast('Letöltve!');}
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),3000);}
+ld();
+</script>
+</body>
+</html>
